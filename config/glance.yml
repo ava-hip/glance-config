@@ -1,0 +1,19 @@
+server:
+  assets-path: /app/assets
+
+theme:
+  light: true
+  background-color: 220 23 95
+  contrast-multiplier: 1.0
+  primary-color: 220 91 54
+  positive-color: 109 58 40
+  negative-color: 347 87 44
+  # Note: assets are cached by the browser, changes to the CSS file
+  # will not be reflected until the browser cache is cleared (Ctrl+F5)
+  custom-css-file: /assets/user.css
+
+pages:
+  !include: home.yml
+  !include: sports.yml
+  !include: medias.yml
+  # !include: dev.yml

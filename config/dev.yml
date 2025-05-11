@@ -1,0 +1,24 @@
+- name: dev
+  columns:
+    - size: small
+      widgets:
+        - type: calendar
+          first-day-of-week: monday
+
+        - type: weather
+          units: metric
+          hour-format: 24h
+          location: Montpellier, France
+
+    - size: full
+      widgets:
+        - type: search
+          autofocus: true
+          new-tab: true
+          search-engine: google
+          bangs:
+            - title: YouTube
+              shortcut: "!yt"
+              url: https://www.youtube.com/results?search_query={QUERY}
+
+          

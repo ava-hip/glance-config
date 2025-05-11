@@ -1,0 +1,113 @@
+- name: home
+  columns:
+    - size: small
+      widgets:
+        - type: calendar
+          first-day-of-week: monday
+
+        - type: weather
+          units: metric
+          hour-format: 24h
+          location: Montpellier, France
+
+        - type: custom-api
+          title: Random Ayah
+          url: https://api.alquran.cloud/v1/ayah/37:105/fr.hamidullah
+          template: |
+            <div>
+              <p class="color-paragraph">{{ .JSON.String "data.text" }}</p>
+              <p class="color-highlight">{{ .JSON.String "data.surah.englishName" }} - {{ .JSON.String "data.surah.number"}}:{{ .JSON.String "data.numberInSurah" }}</p>
+            </div>
+
+
+    - size: full
+      widgets:
+        - type: search
+          autofocus: true
+          new-tab: true
+          search-engine: google
+          bangs:
+            - title: YouTube
+              shortcut: "!yt"
+              url: https://www.youtube.com/results?search_query={QUERY}
+
+        - type: monitor
+          cache: 1m
+          title: Services
+          sites:
+            - title: Nginx
+              url: http://192.168.0.24/
+              icon: di:nginx
+            - title: Home Assistant
+              url: http://192.168.0.25:8123
+              icon: di:home-assistant
+            - title: Portainer
+              url: https://192.168.0.24:9443
+              icon: di:portainer
+            - title: Kavita
+              url: http://192.168.0.26:5000/
+              icon: di:kavita
+            - title: Overseerr
+              url: http://192.168.0.26:5055/
+              icon: di:overseerr
+            - title: Radarr
+              url: http://192.168.0.26:7878
+              icon: di:radarr
+            - title: Sonarr
+              url: http://192.168.0.26:8989
+              icon: di:sonarr
+            - title: Plex
+              url: http://192.168.0.26:32400/web/
+              icon: di:plex
+            - title: Qbittorrent
+              url: http://192.168.0.26:8080/
+              icon: di:qbittorrent
+
+        - type: server-stats
+          servers:
+            - type: local
+              name: ZimaOS
+        
+
+    - size: small
+      widgets:
+        - type: bookmarks
+          groups:
+            - title: Daily
+              links:
+                - title: Gmail
+                  url: https://mail.google.com/mail/u/0/
+                  icon: si:gmail
+                - title: Github
+                  url: https://github.com/
+                  icon: si:github
+            - title: Medias
+              links:
+                - title: YouTube
+                  url: https://www.youtube.com/
+                  icon: si:youtube
+                - title: MyCanal
+                  url: https://www.canalplus.com/
+                  icon: https://cdn.brandfetch.io/idSX-09VJ7/w/180/h/180/theme/dark/icon.png?c=1dxbfHSJFAPEGdCLU4o5B
+                - title: Disney
+                  url: https://www.disneyplus.com/
+                  icon: di:disney-plus	
+                - title: Netflix
+                  url: https://www.netflix.com/browse
+                  icon: si:netflix
+            - title: Tools
+              links: 
+                - title: Chatgpt
+                  url: https://chatgpt.com/
+                  icon: si:openai 
+
+        - type: releases
+          cache: 1d
+          # Without authentication the Github API allows for up to 60 requests per hour. You can create a
+          # read-only token from your Github account settings and use it here to increase the limit.
+          # token: ...
+          repositories:
+            - glanceapp/glance
+            - Kareadita/Kavita
+
+        

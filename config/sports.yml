@@ -1,0 +1,52 @@
+- name: sports
+  columns:
+    - size: small
+      widgets:
+        - type: calendar
+          first-day-of-week: monday
+
+        - type: weather
+          units: metric
+          hour-format: 24h
+          location: Montpellier, France
+
+
+    - size: full
+      widgets:
+        - type: group
+          widgets:
+            - type: rss
+              style: detailed-list
+              title: General
+              feeds:
+                - url: https://dwh.lequipe.fr/api/edito/rss?path=/
+                  title: L'équipe
+
+            - type: rss
+              title: Foot
+              style: detailed-list
+              feeds:
+                - url: https://rmcsport.bfmtv.com/rss/football/
+                  title: RMC Sport - Football
+                - url: https://dwh.lequipe.fr/api/edito/rss?path=/Football/
+                  title: L'équipe - Football
+                - url: https://dwh.lequipe.fr/api/edito/rss?path=/Football/Transferts-football/
+                  title: L'équipe - Mercato
+
+
+            - type: rss
+              title: Basket
+              style: detailed-list
+              feeds:
+                - url: https://rmcsport.bfmtv.com/rss/basket/
+                  title: RMC Sport - Basketball
+                - url: https://dwh.lequipe.fr/api/edito/rss?path=/Basket/Nba/
+                  title: L'équipe - Basketball
+
+    - size: small
+      widgets: 
+      - type: videos
+        style: grid-cards
+        channels:
+          - UCcMGbm0EYWh1SZZ8MsM75tw
+          - UCQsH5XtIc9hONE1BQjucM0g
