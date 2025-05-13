@@ -86,6 +86,9 @@
                 - title: YouTube
                   url: https://www.youtube.com/
                   icon: si:youtube
+                - title: Spotify
+                  url: https://open.spotify.com/
+                  icon: si:spotify
                 - title: MyCanal
                   url: https://www.canalplus.com/
                   icon: https://cdn.brandfetch.io/idSX-09VJ7/w/180/h/180/theme/dark/icon.png?c=1dxbfHSJFAPEGdCLU4o5B
