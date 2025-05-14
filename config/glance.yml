@@ -13,7 +13,7 @@ theme:
   custom-css-file: /assets/user.css
 
 pages:
-  !include: home.yml
-  !include: sports.yml
-  !include: medias.yml
+  - $include: home.yml
+  - $include: sports.yml
+  - $include: medias.yml
   # !include: dev.yml
