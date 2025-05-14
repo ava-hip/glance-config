@@ -9,6 +9,10 @@
           units: metric
           hour-format: 24h
           location: Montpellier, France
+          
+        - type: to-do
+          title: To-do
+          id: todo
 
     - size: full
       widgets:

@@ -4,15 +4,18 @@
       widgets:
         - type: calendar
           first-day-of-week: monday
+          hide-header: true
 
         - type: weather
           units: metric
           hour-format: 24h
           location: Montpellier, France
-          
+          hide-header: true
+
         - type: to-do
           title: To-do
           id: todo
+          hide-header: true
 
 
     - size: full
