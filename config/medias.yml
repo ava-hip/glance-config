@@ -152,7 +152,7 @@
                       {{ $default := $item.String "title" }}
 
                       {{ $thumbPath := $item.String "thumb" }}
-                      {{ $thumbURL := concat "{TAUTULLI_URL}/api/v2?apikey=${TAUTULLI_KEY}&cmd=pms_image_proxy&img=" $thumbPath }}
+                      {{ $thumbURL := concat "${TAUTULLI_URL}/api/v2?apikey=${TAUTULLI_KEY}&cmd=pms_image_proxy&img=" $thumbPath }}
 
                       {{ $playedAt := $item.String "date" | parseRelativeTime "unix" }}
                       {{ if $timeAbsolute }}
