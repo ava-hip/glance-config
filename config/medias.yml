@@ -9,6 +9,10 @@
           units: metric
           hour-format: 24h
           location: Montpellier, France
+          
+        - type: to-do
+          title: To-do
+          id: todo
 
 
     - size: full
@@ -215,7 +219,7 @@
                                   <span>{{ $playedAt }}</span>
                                 {{ else }}
                                   <span {{ $playedAt }}></span>
-                                  <span> ago</span>
+                                  <span>ago</span>
                                 {{ end }}
                               </li>
                             {{ end }}

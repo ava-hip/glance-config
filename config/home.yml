@@ -9,15 +9,10 @@
           units: metric
           hour-format: 24h
           location: Montpellier, France
-
-        - type: custom-api
-          title: Random Ayah
-          url: https://api.alquran.cloud/v1/ayah/37:105/fr.hamidullah
-          template: |
-            <div>
-              <p class="color-paragraph">{{ .JSON.String "data.text" }}</p>
-              <p class="color-highlight">{{ .JSON.String "data.surah.englishName" }} - {{ .JSON.String "data.surah.number"}}:{{ .JSON.String "data.numberInSurah" }}</p>
-            </div>
+          
+        - type: to-do
+          title: To-do
+          id: todo
 
 
     - size: full
