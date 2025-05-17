@@ -169,64 +169,186 @@
             </ul>
           {{ end }}
 
-      - type: custom-api
-        title: Ligue 1
-        url: "http://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard"
-        cache: 15s
-        template: |
-          {{ $events := .JSON.Array "events" }}
-          {{ if eq (len $events) 0 }}
-            <div>Aucun match prévu aujourd'hui.</div>
-          {{ else }}
-            <ul style="list-style:none;padding:0;margin:0;">
-              {{ range $i, $g := $events }}
-                {{ $state := $g.String "competitions.0.status.type.name" }}
-                {{ $away := index ($g.Array "competitions.0.competitors") 0 }}
-                {{ $home := index ($g.Array "competitions.0.competitors") 1 }}
+      - type: group
+        widgets:
+          - type: custom-api
+            title: L1
+            url: "http://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard"
+            cache: 15s
+            template: |
+              {{ $events := .JSON.Array "events" }}
+              {{ if eq (len $events) 0 }}
+                <div>Aucun match prévu aujourd'hui.</div>
+              {{ else }}
+                <ul style="list-style:none;padding:0;margin:0;">
+                  {{ range $i, $g := $events }}
+                    {{ $state := $g.String "competitions.0.status.type.name" }}
+                    {{ $away := index ($g.Array "competitions.0.competitors") 0 }}
+                    {{ $home := index ($g.Array "competitions.0.competitors") 1 }}
 
-                {{ $bg := "#transparent" }}
-                {{ if eq $state "STATUS_IN_PROGRESS" }}
-                  {{ $bg = "#fff3cd" }}
-                {{ end }}
-
-                <li style="background-color:{{ $bg }};border-radius:6px;padding:6px 8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:default;">
-                  <!-- Équipe domicile -->
-                  <span style="display:flex;align-items:center;gap:6px;min-width:75px;">
-                    <img src="{{ $home.String "team.logo" }}" alt="{{ $home.String "team.abbreviation" }}" style="width:20px;height:20px;"/>
-                    <span style="font-weight:500;width:30px;text-align:left;">{{ $home.String "team.abbreviation" }}</span>
-                  </span>
-
-                  <!-- Score ou heure -->
-                  <span style="display:flex;flex-direction:column;align-items:center;min-width:70px;font-family:monospace;">
+                    {{ $bg := "#transparent" }}
                     {{ if eq $state "STATUS_IN_PROGRESS" }}
-                      {{ $period := $g.String "competitions.0.status.period" }}
-                      <strong>
-                        {{ if eq $period "1" }}1re{{ else if eq $period "2" }}2e{{ else }}OT{{ end }} {{ $g.String "competitions.0.status.displayClock" }}
-                      </strong>
-                    {{ else if eq $state "STATUS_SCHEDULED" }}
-                      <span style="font-size:0.75em;">
-                        {{ $rawDate := printf "%s:00Z" (slice ($g.String "competitions.0.date") 0 16) | parseTime "rfc3339" }}
-                        {{ $date := $rawDate.In now.Location }}
-                        {{ $date.Format "02/01 - 15:04" }}
-                      </span>
-                    {{ else }}
-                      <strong>{{ $home.String "score" }} - {{ $away.String "score" }}</strong>
+                      {{ $bg = "#fff3cd" }}
                     {{ end }}
-                    {{ if $g.Exists "competitions.0.status.detail" }}
-                      <span style="font-size:0.7em;color:gray;">{{ $g.String "competitions.0.status.detail" }}</span>
-                    {{ end }}
-                    {{ if $g.Exists "competitions.0.series" }}
-                      <span style="font-size:0.7em;color:var(--glance-accent-color);">{{ $g.String "competitions.0.series.summary" }}</span>
-                    {{ end }}
-                  </span>
 
-                  <!-- Équipe extérieure -->
-                  <span style="display:flex;align-items:center;gap:6px;min-width:75px;justify-content:flex-end;">
-                    <span style="font-weight:500;width:30px;text-align:right;">{{ $away.String "team.abbreviation" }}</span>
-                    <img src="{{ $away.String "team.logo" }}" alt="{{ $away.String "team.abbreviation" }}" style="width:20px;height:20px;"/>
-                  </span>
-                </li>
+                    <li style="background-color:{{ $bg }};border-radius:6px;padding:6px 8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:default;">
+                      <!-- Équipe domicile -->
+                      <span style="display:flex;align-items:center;gap:6px;min-width:75px;">
+                        <img src="{{ $home.String "team.logo" }}" alt="{{ $home.String "team.abbreviation" }}" style="width:20px;height:20px;"/>
+                        <span style="font-weight:500;width:30px;text-align:left;">{{ $home.String "team.abbreviation" }}</span>
+                      </span>
+
+                      <!-- Score ou heure -->
+                      <span style="display:flex;flex-direction:column;align-items:center;min-width:70px;font-family:monospace;">
+                        {{ if eq $state "STATUS_IN_PROGRESS" }}
+                          {{ $period := $g.String "competitions.0.status.period" }}
+                          <strong>
+                            {{ if eq $period "1" }}1re{{ else if eq $period "2" }}2e{{ else }}OT{{ end }} {{ $g.String "competitions.0.status.displayClock" }}
+                          </strong>
+                        {{ else if eq $state "STATUS_SCHEDULED" }}
+                          <span style="font-size:0.75em;">
+                            {{ $rawDate := printf "%s:00Z" (slice ($g.String "competitions.0.date") 0 16) | parseTime "rfc3339" }}
+                            {{ $date := $rawDate.In now.Location }}
+                            {{ $date.Format "02/01 - 15:04" }}
+                          </span>
+                        {{ else }}
+                          <strong>{{ $home.String "score" }} - {{ $away.String "score" }}</strong>
+                        {{ end }}
+                        {{ if $g.Exists "competitions.0.status.detail" }}
+                          <span style="font-size:0.7em;color:gray;">{{ $g.String "competitions.0.status.detail" }}</span>
+                        {{ end }}
+                        {{ if $g.Exists "competitions.0.series" }}
+                          <span style="font-size:0.7em;color:var(--glance-accent-color);">{{ $g.String "competitions.0.series.summary" }}</span>
+                        {{ end }}
+                      </span>
+
+                      <!-- Équipe extérieure -->
+                      <span style="display:flex;align-items:center;gap:6px;min-width:75px;justify-content:flex-end;">
+                        <span style="font-weight:500;width:30px;text-align:right;">{{ $away.String "team.abbreviation" }}</span>
+                        <img src="{{ $away.String "team.logo" }}" alt="{{ $away.String "team.abbreviation" }}" style="width:20px;height:20px;"/>
+                      </span>
+                    </li>
+                  {{ end }}
+                </ul>
               {{ end }}
-            </ul>
-          {{ end }}
+
+          - type: custom-api
+            title: PL
+            url: "http://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard"
+            cache: 15s
+            template: |
+              {{ $events := .JSON.Array "events" }}
+              {{ if eq (len $events) 0 }}
+                <div>Aucun match prévu aujourd'hui.</div>
+              {{ else }}
+                <ul style="list-style:none;padding:0;margin:0;">
+                  {{ range $i, $g := $events }}
+                    {{ $state := $g.String "competitions.0.status.type.name" }}
+                    {{ $away := index ($g.Array "competitions.0.competitors") 0 }}
+                    {{ $home := index ($g.Array "competitions.0.competitors") 1 }}
+
+                    {{ $bg := "#transparent" }}
+                    {{ if eq $state "STATUS_IN_PROGRESS" }}
+                      {{ $bg = "#fff3cd" }}
+                    {{ end }}
+                    <li style="background-color:{{ $bg }};border-radius:6px;padding:6px 8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:default;">
+                      <!-- Équipe domicile -->
+                      <span style="display:flex;align-items:center;gap:6px;min-width:75px;">
+                        <img src="{{ $home.String "team.logo" }}" alt="{{ $home.String "team.abbreviation" }}" style="width:20px;height:20px;"/>
+                        <span style="font-weight:500;width:30px;text-align:left;">{{ $home.String "team.abbreviation" }}</span>
+                      </span>
+
+                      <!-- Score ou heure -->
+                      <span style="display:flex;flex-direction:column;align-items:center;min-width:70px;font-family:monospace;">
+                        {{ if eq $state "STATUS_IN_PROGRESS" }}
+                          {{ $period := $g.String "competitions.0.status.period" }}
+                          <strong>
+                            {{ if eq $period "1" }}1re{{ else if eq $period "2" }}2e{{ else }}OT{{ end }} {{ $g.String "competitions.0.status.displayClock" }}
+                          </strong>
+                        {{ else if eq $state "STATUS_SCHEDULED" }}
+                          <span style="font-size:0.75em;">
+                            {{ $rawDate := printf "%s:00Z" (slice ($g.String "competitions.0.date") 0 16) | parseTime "rfc3339" }}
+                            {{ $date := $rawDate.In now.Location }}
+                            {{ $date.Format "02/01 - 15:04" }}
+                          </span>
+                        {{ else }}
+                          <strong>{{ $home.String "score" }} - {{ $away.String "score" }}</strong>
+                        {{ end }}
+                        {{ if $g.Exists "competitions.0.status.detail" }}
+                          <span style="font-size:0.7em;color:gray;">{{ $g.String "competitions.0.status.detail" }}</span>
+                        {{ end }}
+                        {{ if $g.Exists "competitions.0.series" }}
+                          <span style="font-size:0.7em;color:var(--glance-accent-color);">{{ $g.String "competitions.0.series.summary" }}</span>
+                        {{ end }}
+                      </span>
+
+                      <!-- Équipe extérieure -->
+                      <span style="display:flex;align-items:center;gap:6px;min-width:75px;justify-content:flex-end;">
+                        <span style="font-weight:500;width:30px;text-align:right;">{{ $away.String "team.abbreviation" }}</span>
+                        <img src="{{ $away.String "team.logo" }}" alt="{{ $away.String "team.abbreviation" }}" style="width:20px;height:20px;"/>
+                      </span>
+                    </li>
+                  {{ end }}
+                </ul>
+              {{ end }}
+
+          - type: custom-api
+            title: UCL
+            url: "http://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard"
+            cache: 15s
+            template: |
+              {{ $events := .JSON.Array "events" }}
+              {{ if eq (len $events) 0 }}
+                <div>Aucun match prévu aujourd'hui.</div>
+              {{ else }}
+                <ul style="list-style:none;padding:0;margin:0;">
+                  {{ range $i, $g := $events }}
+                    {{ $state := $g.String "competitions.0.status.type.name" }}
+                    {{ $away := index ($g.Array "competitions.0.competitors") 0 }}
+                    {{ $home := index ($g.Array "competitions.0.competitors") 1 }}
+
+                    {{ $bg := "#transparent" }}
+                    {{ if eq $state "STATUS_IN_PROGRESS" }}
+                      {{ $bg = "#fff3cd" }}
+                    {{ end }}
+                    <li style="background-color:{{ $bg }};border-radius:6px;padding:6px 8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:default;">
+                      <!-- Équipe domicile -->
+                      <span style="display:flex;align-items:center;gap:6px;min-width:75px;">
+                        <img src="{{ $home.String "team.logo" }}" alt="{{ $home.String "team.abbreviation" }}" style="width:20px;height:20px;"/>
+                        <span style="font-weight:500;width:30px;text-align:left;">{{ $home.String "team.abbreviation" }}</span>
+                      </span>
+
+                      <!-- Score ou heure -->
+                      <span style="display:flex;flex-direction:column;align-items:center;min-width:70px;font-family:monospace;">
+                        {{ if eq $state "STATUS_IN_PROGRESS" }}
+                          {{ $period := $g.String "competitions.0.status.period" }}
+                          <strong>
+                            {{ if eq $period "1" }}1re{{ else if eq $period "2" }}2e{{ else }}OT{{ end }} {{ $g.String "competitions.0.status.displayClock" }}
+                          </strong>
+                        {{ else if eq $state "STATUS_SCHEDULED" }}
+                          <span style="font-size:0.75em;">
+                            {{ $rawDate := printf "%s:00Z" (slice ($g.String "competitions.0.date") 0 16) | parseTime "rfc3339" }}
+                            {{ $date := $rawDate.In now.Location }}
+                            {{ $date.Format "02/01 - 15:04" }}
+                          </span>
+                        {{ else }}
+                          <strong>{{ $home.String "score" }} - {{ $away.String "score" }}</strong>
+                        {{ end }}
+                        {{ if $g.Exists "competitions.0.status.detail" }}
+                          <span style="font-size:0.7em;color:gray;">{{ $g.String "competitions.0.status.detail" }}</span>
+                        {{ end }}
+                        {{ if $g.Exists "competitions.0.series" }}
+                          <span style="font-size:0.7em;color:var(--glance-accent-color);">{{ $g.String "competitions.0.series.summary" }}</span>
+                        {{ end }}
+                      </span>
+
+                      <!-- Équipe extérieure -->
+                      <span style="display:flex;align-items:center;gap:6px;min-width:75px;justify-content:flex-end;">
+                        <span style="font-weight:500;width:30px;text-align:right;">{{ $away.String "team.abbreviation" }}</span>
+                        <img src="{{ $away.String "team.logo" }}" alt="{{ $away.String "team.abbreviation" }}" style="width:20px;height:20px;"/>
+                      </span>
+                    </li>
+                  {{ end }}
+                </ul>
+              {{ end }}
 
