@@ -1,4 +1,5 @@
 - name: home
+  width: wide
   columns:
     - size: small
       widgets:
