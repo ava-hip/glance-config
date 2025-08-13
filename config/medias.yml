@@ -333,18 +333,18 @@
 
             - type: custom-api
               title: Trending Media
-              title-url: ${OVERSEERR_URL}/discover/trending    # trending, movies, or tv
-              url: ${OVERSEERR_URL}/api/v1/discover/trending   # trending, movies, or tv
+              title-url: ${OVERSEERR_URL}/discover/trending 
+              url: ${OVERSEERR_URL}/api/v1/discover/trending 
               cache: 15m
               headers:
                 accept: "application/json"
                 x-api-key: ${OVERSEERR_KEY}
               parameters:
-                language: "fr" # this can be changed to other languages if desired
+                language: "fr"
                 page: "1"
               options:
-                show-media-type: true # set to false to hide the "| TV" or "| Movie" suffix
-                show-media-desc: false # set to false to hide the media's summary
+                show-media-type: true
+                show-media-desc: false
               template: |
                 {{ $showMediaType := .Options.BoolOr "show-media-type" true }}
                 {{ $showMediaDesc := .Options.BoolOr "show-media-desc" true }}
@@ -381,6 +381,114 @@
                     </details>
                   {{ end }}
                 {{ end }}
+
+        - type: custom-api
+          title: qBittorrent
+          cache: 15m
+          options:
+            always-show-stats: true 
+          subrequests:
+            info:
+              url: "${QBW_URL}/qb/torrents"
+              method: GET
+              headers:
+                Authorization: "Bearer ${QBW_TOKEN}"
+          template: |
+            {{ $info := .Subrequest "info" }}
+            {{ $torrents := $info.JSON.Array "" }}
+            {{ $alwaysShowStats := .Options.BoolOr "always-show-stats" false }}
+            {{ if eq (len $torrents) 0 }}
+              <div>No torrents found.</div>
+            {{ else }}
+              {{ range $t := $torrents }}
+                {{ $state := $t.String "state" }}
+                {{ $downloaded := $t.Int "downloaded" }}
+                {{ $size := $t.Int "size" }}
+                {{ $icon := "❔" }}
+
+                {{ if ge $downloaded $size }}
+                  {{ $icon = "✅" }}
+                {{ else if or (eq $state "downloading") (eq $state "forcedDL") }}
+                  {{ $icon = "⬇️" }}
+                {{ else if or (eq $state "uploading") (eq $state "forcedUP") }}
+                  {{ $icon = "⬆️" }}
+                {{ else if or (eq $state "pausedDL") (eq $state "stoppedDL") (eq $state "pausedUP") (eq $state "stalledDL") (eq $state "stalledUP") (eq $state "queuedDL") (eq $state "queuedUP") }}
+                  {{ $icon = "⏸️" }}
+                {{ else if or (eq $state "error") (eq $state "missingFiles") }}
+                  {{ $icon = "❗" }}
+                {{ else if eq $state "checkingDL" }}
+                  {{ $icon = "🔍" }}
+                {{ else if eq $state "checkingUP" }}
+                  {{ $icon = "🔎" }}
+                {{ else if eq $state "allocating" }}
+                  {{ $icon = "⚙️" }}
+                {{ else if eq $state "checkingResumeData" }}
+                  {{ $icon = "♻️" }}
+                {{ end }}
+                {{ $name := $t.String "name" }}
+                {{ $shortName := $name }}
+                {{ if gt (len $name) 20 }}
+                  {{ $shortName = printf "%s..." (slice $name 0 20) }}
+                {{ end }}
+                {{ $progress := mul ($t.Float "progress") 100 }}
+                {{ $downloaded := $t.Int "downloaded" }}
+                {{ $size := $t.Int "size" }}
+                {{ $fmtDownloaded := "" }}
+                {{ $fmtSize := "" }}
+                {{ if gt $size 1073741824 }}
+                  {{ $fmtDownloaded = printf "%.2f GB" (div (toFloat $downloaded) 1073741824) }}
+                  {{ $fmtSize = printf "%.2f GB" (div (toFloat $size) 1073741824) }}
+                {{ else }}
+                  {{ $fmtDownloaded = printf "%.2f MB" (div (toFloat $downloaded) 1048576) }}
+                  {{ $fmtSize = printf "%.2f MB" (div (toFloat $size) 1048576) }}
+                {{ end }}
+                {{ $eta := $t.Int "eta" }}
+                {{ $etaStr := "" }}
+                {{ if gt $eta 0 }}
+                  {{ $h := div $eta 3600 }}
+                  {{ $m := div (mod $eta 3600) 60 }}
+                  {{ $etaStr = printf "%dh %dm" $h $m }}
+                {{ else if eq $eta 0 }}
+                  {{ $etaStr = "0m" }}
+                {{ else }}
+                  {{ $etaStr = "∞" }}
+                {{ end }}
+                {{ $category := "None" }}
+                {{ if and ($t.Exists "category") (ne ($t.String "category") "") }}
+                  {{ $category = $t.String "category" }}
+                {{ end }}
+                {{ $numLeechs := 0 }}
+                {{ if $t.Exists "num_leechs" }}
+                  {{ $numLeechs = $t.Int "num_leechs" }}
+                {{ end }}
+                {{ $numSeeds := 0 }}
+                {{ if $t.Exists "num_seeds" }}
+                  {{ $numSeeds = $t.Int "num_seeds" }}
+                {{ end }}
+                <div>
+                  <h2 style="font-size: 1.2em;">{{ $icon }} {{ $shortName }}</h2>
+                  {{ if $alwaysShowStats }}
+                    <hr/>
+                    <div>
+                      <div>Progress: {{ printf "%.1f%%" $progress }}</div>
+                      <div>Downloaded: {{ $fmtDownloaded }} / {{ $fmtSize }}</div>
+                      <div>Category: {{ $category }}</div>
+                      <div>Leechs: {{ $numLeechs }}, Seeds: {{ $numSeeds }}</div>
+                      <div>ETA: {{ $etaStr }}</div>
+                    </div>
+                  {{ else }}
+                    <details>
+                      <summary>Show Stats</summary>
+                      <div>Progress: {{ printf "%.1f%%" $progress }}</div>
+                      <div>Downloaded: {{ $fmtDownloaded }} GB / {{ $fmtSize }} GB</div>
+                      <div>Category: {{ $category }}</div>
+                      <div>Leechs: {{ $numLeechs }}, Seeds: {{ $numSeeds }}</div>
+                      <div>ETA: {{ $etaStr }}</div>
+                    </details>
+                  {{ end }}
+                </div>
+              {{ end }}
+            {{ end }}
                 
     - size: small
       widgets:
